@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
+set (CMAKE_CXX_STANDARD 11)
 project( feature_detect )
 find_package( OpenCV REQUIRED )
 add_executable(feature_detect feature_detect.cpp )
+add_executable(ball_detect ball_detect.cpp )
 target_link_libraries(feature_detect ${OpenCV_LIBS} )
+target_link_libraries(ball_detect ${OpenCV_LIBS} )

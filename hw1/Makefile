@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named ball_detect
+
+# Build rule for target.
+ball_detect: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ball_detect
+.PHONY : ball_detect
+
+# fast build rule for target.
+ball_detect/fast:
+	$(MAKE) -f CMakeFiles/ball_detect.dir/build.make CMakeFiles/ball_detect.dir/build
+.PHONY : ball_detect/fast
+
+#=============================================================================
 # Target rules for targets named feature_detect
 
 # Build rule for target.
@@ -122,6 +135,33 @@ feature_detect: cmake_check_build_system
 feature_detect/fast:
 	$(MAKE) -f CMakeFiles/feature_detect.dir/build.make CMakeFiles/feature_detect.dir/build
 .PHONY : feature_detect/fast
+
+ball_detect.o: ball_detect.cpp.o
+
+.PHONY : ball_detect.o
+
+# target to build an object file
+ball_detect.cpp.o:
+	$(MAKE) -f CMakeFiles/ball_detect.dir/build.make CMakeFiles/ball_detect.dir/ball_detect.cpp.o
+.PHONY : ball_detect.cpp.o
+
+ball_detect.i: ball_detect.cpp.i
+
+.PHONY : ball_detect.i
+
+# target to preprocess a source file
+ball_detect.cpp.i:
+	$(MAKE) -f CMakeFiles/ball_detect.dir/build.make CMakeFiles/ball_detect.dir/ball_detect.cpp.i
+.PHONY : ball_detect.cpp.i
+
+ball_detect.s: ball_detect.cpp.s
+
+.PHONY : ball_detect.s
+
+# target to generate assembly for a file
+ball_detect.cpp.s:
+	$(MAKE) -f CMakeFiles/ball_detect.dir/build.make CMakeFiles/ball_detect.dir/ball_detect.cpp.s
+.PHONY : ball_detect.cpp.s
 
 feature_detect.o: feature_detect.cpp.o
 
@@ -157,8 +197,12 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
+	@echo "... ball_detect"
 	@echo "... edit_cache"
 	@echo "... feature_detect"
+	@echo "... ball_detect.o"
+	@echo "... ball_detect.i"
+	@echo "... ball_detect.s"
 	@echo "... feature_detect.o"
 	@echo "... feature_detect.i"
 	@echo "... feature_detect.s"
