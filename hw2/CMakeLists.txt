@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 2.8)
 set (CMAKE_CXX_STANDARD 11)
 project( hw2 )
 find_package( OpenCV REQUIRED )
+
 add_executable(corner_detection corner_detection.cpp )
 add_executable(intrinsic intrinsic.cpp )
+add_executable(distortion_correction distortion_correction.cpp )
+add_executable(object_post_estimation object_post_estimation.cpp )
+
 target_link_libraries(corner_detection ${OpenCV_LIBS} )
 target_link_libraries(intrinsic ${OpenCV_LIBS} )
+target_link_libraries(distortion_correction ${OpenCV_LIBS} )
+target_link_libraries(object_post_estimation ${OpenCV_LIBS} )

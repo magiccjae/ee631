@@ -48,18 +48,18 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/magiccjae/jae_stuff/classes/ee631/hw2
+CMAKE_SOURCE_DIR = /home/magiccjae/a_jae_stuff/classes/ee631/hw2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/magiccjae/jae_stuff/classes/ee631/hw2/build
+CMAKE_BINARY_DIR = /home/magiccjae/a_jae_stuff/classes/ee631/hw2/build
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/magiccjae/jae_stuff/classes/ee631/hw2/build/CMakeFiles /home/magiccjae/jae_stuff/classes/ee631/hw2/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/magiccjae/a_jae_stuff/classes/ee631/hw2/build/CMakeFiles /home/magiccjae/a_jae_stuff/classes/ee631/hw2/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/magiccjae/jae_stuff/classes/ee631/hw2/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/magiccjae/a_jae_stuff/classes/ee631/hw2/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named corner_detection
+
+# Build rule for target.
+corner_detection: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 corner_detection
+.PHONY : corner_detection
+
+# fast build rule for target.
+corner_detection/fast:
+	$(MAKE) -f CMakeFiles/corner_detection.dir/build.make CMakeFiles/corner_detection.dir/build
+.PHONY : corner_detection/fast
+
+#=============================================================================
 # Target rules for targets named intrinsic
 
 # Build rule for target.
@@ -124,17 +137,30 @@ intrinsic/fast:
 .PHONY : intrinsic/fast
 
 #=============================================================================
-# Target rules for targets named corner_detection
+# Target rules for targets named distortion_correction
 
 # Build rule for target.
-corner_detection: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 corner_detection
-.PHONY : corner_detection
+distortion_correction: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 distortion_correction
+.PHONY : distortion_correction
 
 # fast build rule for target.
-corner_detection/fast:
-	$(MAKE) -f CMakeFiles/corner_detection.dir/build.make CMakeFiles/corner_detection.dir/build
-.PHONY : corner_detection/fast
+distortion_correction/fast:
+	$(MAKE) -f CMakeFiles/distortion_correction.dir/build.make CMakeFiles/distortion_correction.dir/build
+.PHONY : distortion_correction/fast
+
+#=============================================================================
+# Target rules for targets named object_post_estimation
+
+# Build rule for target.
+object_post_estimation: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 object_post_estimation
+.PHONY : object_post_estimation
+
+# fast build rule for target.
+object_post_estimation/fast:
+	$(MAKE) -f CMakeFiles/object_post_estimation.dir/build.make CMakeFiles/object_post_estimation.dir/build
+.PHONY : object_post_estimation/fast
 
 corner_detection.o: corner_detection.cpp.o
 
@@ -163,6 +189,33 @@ corner_detection.cpp.s:
 	$(MAKE) -f CMakeFiles/corner_detection.dir/build.make CMakeFiles/corner_detection.dir/corner_detection.cpp.s
 .PHONY : corner_detection.cpp.s
 
+distortion_correction.o: distortion_correction.cpp.o
+
+.PHONY : distortion_correction.o
+
+# target to build an object file
+distortion_correction.cpp.o:
+	$(MAKE) -f CMakeFiles/distortion_correction.dir/build.make CMakeFiles/distortion_correction.dir/distortion_correction.cpp.o
+.PHONY : distortion_correction.cpp.o
+
+distortion_correction.i: distortion_correction.cpp.i
+
+.PHONY : distortion_correction.i
+
+# target to preprocess a source file
+distortion_correction.cpp.i:
+	$(MAKE) -f CMakeFiles/distortion_correction.dir/build.make CMakeFiles/distortion_correction.dir/distortion_correction.cpp.i
+.PHONY : distortion_correction.cpp.i
+
+distortion_correction.s: distortion_correction.cpp.s
+
+.PHONY : distortion_correction.s
+
+# target to generate assembly for a file
+distortion_correction.cpp.s:
+	$(MAKE) -f CMakeFiles/distortion_correction.dir/build.make CMakeFiles/distortion_correction.dir/distortion_correction.cpp.s
+.PHONY : distortion_correction.cpp.s
+
 intrinsic.o: intrinsic.cpp.o
 
 .PHONY : intrinsic.o
@@ -190,6 +243,33 @@ intrinsic.cpp.s:
 	$(MAKE) -f CMakeFiles/intrinsic.dir/build.make CMakeFiles/intrinsic.dir/intrinsic.cpp.s
 .PHONY : intrinsic.cpp.s
 
+object_post_estimation.o: object_post_estimation.cpp.o
+
+.PHONY : object_post_estimation.o
+
+# target to build an object file
+object_post_estimation.cpp.o:
+	$(MAKE) -f CMakeFiles/object_post_estimation.dir/build.make CMakeFiles/object_post_estimation.dir/object_post_estimation.cpp.o
+.PHONY : object_post_estimation.cpp.o
+
+object_post_estimation.i: object_post_estimation.cpp.i
+
+.PHONY : object_post_estimation.i
+
+# target to preprocess a source file
+object_post_estimation.cpp.i:
+	$(MAKE) -f CMakeFiles/object_post_estimation.dir/build.make CMakeFiles/object_post_estimation.dir/object_post_estimation.cpp.i
+.PHONY : object_post_estimation.cpp.i
+
+object_post_estimation.s: object_post_estimation.cpp.s
+
+.PHONY : object_post_estimation.s
+
+# target to generate assembly for a file
+object_post_estimation.cpp.s:
+	$(MAKE) -f CMakeFiles/object_post_estimation.dir/build.make CMakeFiles/object_post_estimation.dir/object_post_estimation.cpp.s
+.PHONY : object_post_estimation.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -198,14 +278,22 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... intrinsic"
 	@echo "... corner_detection"
+	@echo "... intrinsic"
+	@echo "... distortion_correction"
+	@echo "... object_post_estimation"
 	@echo "... corner_detection.o"
 	@echo "... corner_detection.i"
 	@echo "... corner_detection.s"
+	@echo "... distortion_correction.o"
+	@echo "... distortion_correction.i"
+	@echo "... distortion_correction.s"
 	@echo "... intrinsic.o"
 	@echo "... intrinsic.i"
 	@echo "... intrinsic.s"
+	@echo "... object_post_estimation.o"
+	@echo "... object_post_estimation.i"
+	@echo "... object_post_estimation.s"
 .PHONY : help
 
 
