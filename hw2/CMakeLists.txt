@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 2.8)
+set (CMAKE_CXX_STANDARD 11)
+project( hw2 )
+find_package( OpenCV REQUIRED )
+add_executable(corner_detection corner_detection.cpp )
+add_executable(intrinsic intrinsic.cpp )
+target_link_libraries(corner_detection ${OpenCV_LIBS} )
+target_link_libraries(intrinsic ${OpenCV_LIBS} )
