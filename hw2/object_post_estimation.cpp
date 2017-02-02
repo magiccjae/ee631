@@ -48,10 +48,12 @@ int main(int, char**)
         istringstream iss(line);
         float x;
         float y;
+        float z;
         iss >> x;
         iss >> y;
-        cout << x << " " << y << endl;
-        object_points.push_back(Point3f(x, y, 0.0f));
+        iss >> z;
+        cout << x << " " << y << " " << z <<endl;
+        object_points.push_back(Point3f(x, y, z));
       }
     }
   }

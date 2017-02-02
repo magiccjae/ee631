@@ -13,7 +13,7 @@ int main(int, char**)
   // write to a XML or YAML file
   FileStorage fs("intrinsic.xml",FileStorage::WRITE);
 
-  string header = "/home/magiccjae/a_jae_stuff/classes/ee631/hw2/calibration_image/AR";
+  string header = "/home/magiccjae/jae_stuff/classes/ee631/hw2/calibration_image/AR";
   string ending = ".jpg";
   namedWindow(window_name, CV_WINDOW_AUTOSIZE);
   src = imread(header+to_string(1)+ending);
@@ -26,7 +26,7 @@ int main(int, char**)
 
   for(int i=0; i<patternsize.height; i++){
     for(int j=0; j<patternsize.width; j++){
-      object_point.push_back(Point3f(i,j,0.0f));
+      object_point.push_back(Point3f(j,i,0.0f));
     }
   }
 
@@ -38,6 +38,7 @@ int main(int, char**)
     cvtColor(src,gray,CV_BGR2GRAY);
     bool patternfound = findChessboardCorners(gray, patternsize, corners, CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE + CALIB_CB_FAST_CHECK);
     cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+    // cout << corners << endl;
     drawChessboardCorners(src, patternsize, Mat(corners), patternfound);
 
     image_points.push_back(corners);
