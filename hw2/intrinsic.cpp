@@ -13,7 +13,7 @@ int main(int, char**)
   // write to a XML or YAML file
   FileStorage fs("intrinsic.xml",FileStorage::WRITE);
 
-  string header = "/home/magiccjae/jae_stuff/classes/ee631/hw2/calibration_image/AR";
+  string header = "/home/magiccjae/a_jae_stuff/classes/ee631/hw2/calibration_image/AR";
   string ending = ".jpg";
   namedWindow(window_name, CV_WINDOW_AUTOSIZE);
   src = imread(header+to_string(1)+ending);

@@ -5,10 +5,12 @@
 using namespace cv;
 using namespace std;
 
+Mat src;
+
 int main(int, char**)
 {
   // read camera parameters and distortion coefficient from a file
-  FileStorage fs("intrinsic.xml", FileStorage::READ);
+  FileStorage fs("intrinsic_cam.xml", FileStorage::READ);
   Mat intrinsic, distCoeffs;
   fs["intrinsic"] >> intrinsic;
   fs["distCoeffs"] >> distCoeffs;
@@ -18,7 +20,7 @@ int main(int, char**)
   cout << "distortion coefficient" << endl;
   cout << distCoeffs << endl;
 
-  Mat src_turned = imread("../Turned.jpg");
+  Mat src_turned = imread("../capture1.jpg");
   Mat undistorted_turned, difference_turned;
   // imshow("src_turned", src_turned);
   undistort(src_turned, undistorted_turned, intrinsic, distCoeffs);
@@ -26,7 +28,7 @@ int main(int, char**)
   absdiff(src_turned, undistorted_turned, difference_turned);
   imshow("difference_turned", difference_turned);
 
-  Mat src_close = imread("../Close.jpg");
+  Mat src_close = imread("../capture2.jpg");
   Mat undistorted_close, difference_close;
   // imshow("src_close", src_close);
   undistort(src_close, undistorted_close, intrinsic, distCoeffs);
@@ -34,7 +36,7 @@ int main(int, char**)
   absdiff(src_close, undistorted_close, difference_close);
   imshow("difference_close", difference_close);
 
-  Mat src_far = imread("../Far.jpg");
+  Mat src_far = imread("../capture3.jpg");
   Mat undistorted_far, difference_far;
   // imshow("src_far", src_far);
   undistort(src_far, undistorted_far, intrinsic, distCoeffs);
