@@ -10,6 +10,7 @@ Mat src, gray;
 
 int main(int argc, char* argv[])
 {
+  cout << "Usage: \"./intrinsic (left) or (right)\"" << endl;
   string l_or_r = argv[1];
   string filename = "intrinsic_" + l_or_r + ".xml";
   cout << filename << endl;
@@ -17,10 +18,10 @@ int main(int argc, char* argv[])
   FileStorage fs(filename, FileStorage::WRITE);
   string header = "";
   if(l_or_r == "left"){
-    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/left_camera/CameraL";
+    header = "/home/magiccjae/a_jae_stuff/classes/ee631/hw3/left_camera/CameraL";
   }
   else if(l_or_r == "right"){
-    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/right_camera/CameraR";
+    header = "/home/magiccjae/a_jae_stuff/classes/ee631/hw3/right_camera/CameraR";
   }
 
   string ending = ".bmp";
