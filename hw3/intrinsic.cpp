@@ -10,6 +10,7 @@ Mat src, gray;
 
 int main(int argc, char* argv[])
 {
+  // an additional argument is needed to choose either left or right images.
   cout << "Usage: \"./intrinsic (left) or (right)\"" << endl;
   string l_or_r = argv[1];
   string filename = "intrinsic_" + l_or_r + ".xml";

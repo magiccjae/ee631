@@ -5,6 +5,8 @@ find_package( OpenCV REQUIRED )
 
 add_executable(intrinsic intrinsic.cpp )
 add_executable(stereo_calibration stereo_calibration.cpp )
+add_executable(epipolar_lines epipolar_lines.cpp )
 
 target_link_libraries(intrinsic ${OpenCV_LIBS} )
 target_link_libraries(stereo_calibration ${OpenCV_LIBS} )
+target_link_libraries(epipolar_lines ${OpenCV_LIBS} )

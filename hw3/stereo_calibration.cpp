@@ -22,14 +22,14 @@ int main(int, char**)
   cout << dist_coeffs_left << endl;
 
   FileStorage fs_right("intrinsic_right.xml", FileStorage::READ);
-  Mat intrinsic_right, dist_coeffis_right;
+  Mat intrinsic_right, dist_coeffs_right;
   fs_right["intrinsic"] >> intrinsic_right;
-  fs_right["distCoeffs"] >> dist_coeffis_right;
+  fs_right["distCoeffs"] >> dist_coeffs_right;
 
   cout << "intrinsic_right" << endl;
   cout << intrinsic_right << endl;
   cout << "distortion coefficient right" << endl;
-  cout << dist_coeffis_right << endl;
+  cout << dist_coeffs_right << endl;
 
   string left_header = "/home/magiccjae/a_jae_stuff/classes/ee631/hw3/stereo/StereoL";
   string right_header = "/home/magiccjae/a_jae_stuff/classes/ee631/hw3/stereo/StereoR";
@@ -81,15 +81,14 @@ int main(int, char**)
     waitKey(0);
   }
 
-
-
+  // stereoCalibrate output place holders
   Mat rotation;
   Mat translation;
   Mat essential;
   Mat fundamental;
 
   stereoCalibrate(object_points, image_points_left, image_points_right, intrinsic_left, dist_coeffs_left, \
-                  intrinsic_right, dist_coeffis_right, src.size(), rotation, translation, essential, fundamental, \
+                  intrinsic_right, dist_coeffs_right, src.size(), rotation, translation, essential, fundamental, \
                   CV_CALIB_FIX_INTRINSIC, TermCriteria(TermCriteria::COUNT+TermCriteria::EPS, 30, 0.000001));
 
   cout << "===== R =====" << endl;
@@ -101,6 +100,9 @@ int main(int, char**)
   cout << "===== F =====" << endl;
   cout << fundamental << endl;
 
+  FileStorage fs("fundamental.xml", FileStorage::WRITE);
+  fs <<"fundamental" << fundamental;
+  fs.release();
   // while(waitKey(0)!=27);
 
   return 0;
