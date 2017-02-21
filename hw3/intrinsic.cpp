@@ -19,10 +19,10 @@ int main(int argc, char* argv[])
   FileStorage fs(filename, FileStorage::WRITE);
   string header = "";
   if(l_or_r == "left"){
-    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/left_camera/CameraL";
+    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/images/ImageJae/leftL";
   }
   else if(l_or_r == "right"){
-    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/right_camera/CameraR";
+    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/images/ImageJae/rightR";
   }
 
   string ending = ".bmp";
@@ -37,11 +37,12 @@ int main(int argc, char* argv[])
 
   for(int i=0; i<patternsize.height; i++){
     for(int j=0; j<patternsize.width; j++){
-      object_point.push_back(Point3f(j,i,0.0f));
+      object_point.push_back(Point3f(3.88*j,3.88*i,0.0f));
     }
   }
 
-  for(int i=0; i<=31; i++){
+  // Adjust your number of images for calibration to get the minimum distortion coefficient on last column
+  for(int i=0; i<=28; i++){
     cout << i << endl;
     object_points.push_back(object_point);
 
