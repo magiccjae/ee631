@@ -16,3 +16,6 @@ and also reads in pairs of images taken from stereo camera. Set file path to you
 
 epipolar_lines.cpp
 This program reads in fundamental matrix from stereo calibration and draw epipolar lines on a pair of stereo images.
+
+rectification.cpp
+This program rectifies images taken from a stereo camera and align images taken from each camera horizontally. This makes general configuration for a stereo camera become canonical configuration.
