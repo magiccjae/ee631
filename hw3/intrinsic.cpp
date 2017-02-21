@@ -19,10 +19,10 @@ int main(int argc, char* argv[])
   FileStorage fs(filename, FileStorage::WRITE);
   string header = "";
   if(l_or_r == "left"){
-    header = "/home/magiccjae/a_jae_stuff/classes/ee631/hw3/left_camera/CameraL";
+    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/left_camera/CameraL";
   }
   else if(l_or_r == "right"){
-    header = "/home/magiccjae/a_jae_stuff/classes/ee631/hw3/right_camera/CameraR";
+    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/right_camera/CameraR";
   }
 
   string ending = ".bmp";
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     src = imread(header+to_string(i)+ending);
     cvtColor(src,gray,CV_BGR2GRAY);
     bool patternfound = findChessboardCorners(gray, patternsize, corners, CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE + CALIB_CB_FAST_CHECK);
-    cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+    cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 50, 0.01));
     // cout << corners << endl;
     drawChessboardCorners(src, patternsize, Mat(corners), patternfound);
 

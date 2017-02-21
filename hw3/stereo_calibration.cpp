@@ -31,8 +31,8 @@ int main(int, char**)
   cout << "distortion coefficient right" << endl;
   cout << dist_coeffs_right << endl;
 
-  string left_header = "/home/magiccjae/a_jae_stuff/classes/ee631/hw3/stereo/StereoL";
-  string right_header = "/home/magiccjae/a_jae_stuff/classes/ee631/hw3/stereo/StereoR";
+  string left_header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/stereo/StereoL";
+  string right_header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/stereo/StereoR";
   string ending = ".bmp";
   namedWindow(window_name, CV_WINDOW_AUTOSIZE);
   src = imread(left_header+to_string(0)+ending);
@@ -43,10 +43,10 @@ int main(int, char**)
   vector<vector<Point2f>> image_points_left;   // This vector contains the same number of object points as the number of images with patterns.
   vector<vector<Point2f>> image_points_right;   // This vector contains the same number of object points as the number of images with patterns.
 
-  // creating a object point vector
+  // creating a object point vector. 3.88 is the size of a square on the chessboard
   for(int i=0; i<patternsize.height; i++){
     for(int j=0; j<patternsize.width; j++){
-      object_point.push_back(Point3f(j,i,0.0f));
+      object_point.push_back(Point3f(3.88*j,3.88*i,0.0f));
     }
   }
 
@@ -58,7 +58,7 @@ int main(int, char**)
 
     vector<Point2f> corners;   // This will be filled by the detected corners
     bool patternfound = findChessboardCorners(gray, patternsize, corners, CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE + CALIB_CB_FAST_CHECK);
-    cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+    cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 50, 0.01));
     drawChessboardCorners(src, patternsize, Mat(corners), patternfound);
     image_points_left.push_back(corners);
 
@@ -73,7 +73,7 @@ int main(int, char**)
 
     vector<Point2f> corners;   // This will be filled by the detected corners
     bool patternfound = findChessboardCorners(gray, patternsize, corners, CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE + CALIB_CB_FAST_CHECK);
-    cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+    cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 50, 0.01));
     drawChessboardCorners(src, patternsize, Mat(corners), patternfound);
     image_points_right.push_back(corners);
 
@@ -89,7 +89,7 @@ int main(int, char**)
 
   stereoCalibrate(object_points, image_points_left, image_points_right, intrinsic_left, dist_coeffs_left, \
                   intrinsic_right, dist_coeffs_right, src.size(), rotation, translation, essential, fundamental, \
-                  CV_CALIB_FIX_INTRINSIC, TermCriteria(TermCriteria::COUNT+TermCriteria::EPS, 30, 0.000001));
+                  CV_CALIB_FIX_INTRINSIC, TermCriteria(TermCriteria::COUNT+TermCriteria::EPS, 50, 0.01));
 
   cout << "===== R =====" << endl;
   cout << rotation << endl;
@@ -102,6 +102,10 @@ int main(int, char**)
 
   FileStorage fs("fundamental.xml", FileStorage::WRITE);
   fs <<"fundamental" << fundamental;
+  fs << "rotation" << rotation;
+  fs << "translation" << translation;
+  fs << "essential" << essential;
+
   fs.release();
   // while(waitKey(0)!=27);
 

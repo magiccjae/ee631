@@ -91,8 +91,8 @@ int main(int, char**)
   cout << fundamental << endl;
 
   // read images
-  string left_name = "/home/magiccjae/a_jae_stuff/classes/ee631/hw3/stereo/StereoL0.bmp";
-  string right_name = "/home/magiccjae/a_jae_stuff/classes/ee631/hw3/stereo/StereoR0.bmp";
+  string left_name = "/home/magiccjae/jae_stuff/classes/ee631/hw3/stereo/StereoL0.bmp";
+  string right_name = "/home/magiccjae/jae_stuff/classes/ee631/hw3/stereo/StereoR0.bmp";
   left_image = imread(left_name);
   right_image = imread(right_name);
   // correct distortion for left and right images
