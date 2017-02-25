@@ -19,10 +19,10 @@ int main(int argc, char* argv[])
   FileStorage fs(filename, FileStorage::WRITE);
   string header = "";
   if(l_or_r == "left"){
-    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/images/ImageJae/leftL";
+    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/images/left/leftL";
   }
   else if(l_or_r == "right"){
-    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/images/ImageJae/rightR";
+    header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/images/right/rightR";
   }
 
   string ending = ".bmp";

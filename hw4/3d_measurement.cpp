@@ -1,6 +1,7 @@
 #include "opencv2/opencv.hpp"
 #include <string>
 #include <iostream>
+#include <math.h>   // for rounding float numbers to less decimal places
 
 using namespace cv;
 using namespace std;
@@ -93,8 +94,6 @@ int main(int, char**)
   circle(right_image, four_right.at(2), 3, Scalar(0,255,0), 3, 8, 0);
   circle(right_image, four_right.at(3), 3, Scalar(0,255,0), 3, 8, 0);
 
-  imshow("left_image", left_image);
-  imshow("right_image", right_image);
 
   // four_ideal is the four outermost points of the chess board undistorted and rectified
   vector<Point2f> four_ideal_left;
@@ -102,19 +101,57 @@ int main(int, char**)
   undistortPoints(four_left, four_ideal_left, intrinsic_left, dist_coeffs_left, R1, P1);
   undistortPoints(four_right, four_ideal_right, intrinsic_right, dist_coeffs_right, R2, P2);
 
-    #####  #######    #    ######  #######    #     # ####### ######  #######
-   #     #    #      # #   #     #    #       #     # #       #     # #
-   #          #     #   #  #     #    #       #     # #       #     # #
-    #####     #    #     # ######     #       ####### #####   ######  #####
-         #    #    ####### #   #      #       #     # #       #   #   #
-   #     #    #    #     # #    #     #       #     # #       #    #  #
-    #####     #    #     # #     #    #       #     # ####### #     # #######
-   // I need to use perspectiveTransoform(). I am not sure about the inputs to the function.
-
+  // compare Y coordinates to see if they are same.
   cout << "===== left =====" << endl;
   cout << four_ideal_left << endl;
   cout << "===== right =====" << endl;
   cout << four_ideal_right << endl;
+
+  vector<Point3f> four_input_left;
+  vector<Point3f> four_input_right;
+  for(int i=0; i<4; i++){
+    float disparity = four_ideal_left.at(i).x - four_ideal_right.at(i).x;
+    Point3f a_point(four_ideal_left.at(i).x, four_ideal_left.at(i).y, disparity);
+    Point3f another_point(four_ideal_right.at(i).x, four_ideal_right.at(i).y, disparity);
+    four_input_left.push_back(a_point);
+    four_input_right.push_back(another_point);
+  }
+
+  // these vectors will contain 3D information.
+  vector<Point3f> four_3d_left;
+  vector<Point3f> four_3d_right;
+  perspectiveTransform(four_input_left, four_3d_left, Q);
+  perspectiveTransform(four_input_right, four_3d_right, Q);
+  cout << "===== left 3D=====" << endl;
+  cout << four_3d_left << endl;
+  cout << "===== right 3D=====" << endl;
+  cout << four_3d_right << endl;
+
+  // adding 3D coordinates to images
+  for(int i=0; i<4; i++){
+    float temp_x = round(four_3d_left.at(i).x*100)/100.0;
+    float temp_y = round(four_3d_left.at(i).y*100)/100.0;
+    float temp_z = round(four_3d_left.at(i).z*100)/100.0;
+    string text_x = to_string(temp_x);
+    string text_y = to_string(temp_y);
+    string text_z = to_string(temp_z);
+    string text = "(" + text_x + ", " + text_y + ", " + text_z + ")";
+    Point text_point = four_ideal_left.at(i);
+    putText(left_image, text, Point(text_point.x-200, text_point.y), FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1, 8, false);
+
+    float temp_x1 = round(four_3d_right.at(i).x*100)/100.0;
+    float temp_y1 = round(four_3d_right.at(i).y*100)/100.0;
+    float temp_z1 = round(four_3d_right.at(i).z*100)/100.0;
+    string text_x1 = to_string(temp_x1);
+    string text_y1 = to_string(temp_y1);
+    string text_z1 = to_string(temp_z1);
+    string text1 = "(" + text_x1 + ", " + text_y1 + ", " + text_z1 + ")";
+    Point text_point1 = four_ideal_right.at(i);
+    putText(right_image, text1, Point(text_point1.x, text_point1.y), FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1, 8, false);
+  }
+
+  imshow("left_image", left_image);
+  imshow("right_image", right_image);
 
   while(waitKey(0)!=27);
 

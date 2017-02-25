@@ -31,8 +31,8 @@ int main(int, char**)
   cout << "distortion coefficient right" << endl;
   cout << dist_coeffs_right << endl;
 
-  string left_header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/images/ImageJae/stereoL";
-  string right_header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/images/ImageJae/stereoR";
+  string left_header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/images/stereo/stereoL";
+  string right_header = "/home/magiccjae/jae_stuff/classes/ee631/hw3/images/stereo/stereoR";
   string ending = ".bmp";
   namedWindow(window_name, CV_WINDOW_AUTOSIZE);
   src = imread(left_header+to_string(1)+ending);
