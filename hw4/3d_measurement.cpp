@@ -109,6 +109,7 @@ int main(int, char**)
 
   vector<Point3f> four_input_left;
   vector<Point3f> four_input_right;
+  // augment disparity to make suitable inputs for perspectiveTransform function
   for(int i=0; i<4; i++){
     float disparity = four_ideal_left.at(i).x - four_ideal_right.at(i).x;
     Point3f a_point(four_ideal_left.at(i).x, four_ideal_left.at(i).y, disparity);
@@ -154,6 +155,19 @@ int main(int, char**)
   imshow("right_image", right_image);
 
   while(waitKey(0)!=27);
+
+  // write all matrices into a .xml file
+  FileStorage fs_write("everything.xml", FileStorage::WRITE);
+  fs_write << "intrinsic_left" << intrinsic_left;
+  fs_write << "distCoeffs_left" << dist_coeffs_left;
+  fs_write << "intrinsic_right" << intrinsic_right;
+  fs_write << "distCoeffs_right" << dist_coeffs_right;
+  fs_write << "R1" << R1;
+  fs_write << "R2" << R2;
+  fs_write << "P1" << P1;
+  fs_write << "P2" << P2;
+  fs_write << "Q" << Q;
+  fs_write.release();
 
   return 0;
 }
