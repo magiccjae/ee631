@@ -76,7 +76,7 @@ int main(int, char**)
   int right_x = 0;
   int right_y = 0;
   Rect right_rec(right_x, right_y, 320, 480);
-  Mat right_roi_background = right_background(right_rec);\
+  Mat right_roi_background = right_background(right_rec);
 
   Mat right_image, right_gray, right_result, right_roi;
   for(int i=1; i<50; i++){
