@@ -18,8 +18,8 @@ Mat element = getStructuringElement( morph_elem, Size( 2*morph_size + 1, 2*morph
 
 int main(int, char**)
 {
-  string left_header = "/home/magiccjae/jae_stuff/classes/ee631/hw4/images/ballL";
-  string right_header = "/home/magiccjae/jae_stuff/classes/ee631/hw4/images/ballR";
+  string left_header = "/home/magiccjae/jae_stuff/classes/ee631/hw4/images/Ball_testL";
+  string right_header = "/home/magiccjae/jae_stuff/classes/ee631/hw4/images/Ball_testR";
   string ending = ".bmp";
   Mat left_background = imread(left_header+to_string(1)+ending);
   Mat right_background = imread(right_header+to_string(1)+ending);
@@ -27,9 +27,9 @@ int main(int, char**)
   cvtColor(right_background, right_background, CV_BGR2GRAY);
 
   // image process only in this region
-  int left_x = 270;
+  int left_x = 320;
   int left_y = 0;
-  Rect left_rec(left_x, left_y, 230, 480);
+  Rect left_rec(left_x, left_y, 320, 480);
   Mat left_roi_background = left_background(left_rec);
 
   // parameters for SimpleBlobDetector`
@@ -44,24 +44,24 @@ int main(int, char**)
   params.minArea = 100;
   // Filter by Circularity
   params.filterByCircularity = true;
-  params.minCircularity = 0.5;
+  params.minCircularity = 0.3;
   // Filter by Convexity
   params.filterByConvexity = true;
-  params.minConvexity = 0.3;
+  params.minConvexity = 0.1;
   // Filter by Inertia
   params.filterByInertia = true;
-  params.minInertiaRatio = 0.3;
+  params.minInertiaRatio = 0.1;
   Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
 
   Mat left_image, left_gray, left_result, left_roi;
   for(int i=1; i<50; i++){
+    cout << i << endl;
     left_image = imread(left_header+to_string(i)+ending);
     cvtColor(left_image, left_gray, CV_BGR2GRAY);
     left_roi = left_gray(left_rec);
     absdiff(left_roi_background, left_roi, left_result);
     threshold(left_result, left_result, threshold_value, max_BINARY_value, threshold_type);
     morphologyEx(left_result, left_result, morph_operation, element);
-
     vector<KeyPoint> keypoints;
     detector->detect(left_result, keypoints);
     for(int i=0; i<keypoints.size(); i++){
@@ -80,6 +80,7 @@ int main(int, char**)
 
   Mat right_image, right_gray, right_result, right_roi;
   for(int i=1; i<50; i++){
+    cout << i << endl;
     right_image = imread(right_header+to_string(i)+ending);
     cvtColor(right_image, right_gray, CV_BGR2GRAY);
     right_roi = right_gray(right_rec);

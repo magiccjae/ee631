@@ -6,40 +6,73 @@
 using namespace cv;
 using namespace std;
 
+#define xml 0
+
 vector<Point2f> get_outer_points(vector<Point2f> corners, int width, int height);
 
 int main(int, char**)
 {
-  // read camera parameters and distortion coefficient from a file
-  FileStorage fs_left("intrinsic_left.xml", FileStorage::READ);
   Mat intrinsic_left, dist_coeffs_left;
-  fs_left["intrinsic"] >> intrinsic_left;
-  fs_left["distCoeffs"] >> dist_coeffs_left;
-
-  cout << "intrinsic_left" << endl;
-  cout << intrinsic_left << endl;
-  cout << "distortion coefficient left" << endl;
-  cout << dist_coeffs_left << endl;
-
-  FileStorage fs_right("intrinsic_right.xml", FileStorage::READ);
   Mat intrinsic_right, dist_coeffs_right;
-  fs_right["intrinsic"] >> intrinsic_right;
-  fs_right["distCoeffs"] >> dist_coeffs_right;
-
-  cout << "intrinsic_right" << endl;
-  cout << intrinsic_right << endl;
-  cout << "distortion coefficient right" << endl;
-  cout << dist_coeffs_right << endl;
-
-  // read fundamental matrix from a file
-  FileStorage fs("fundamental.xml", FileStorage::READ);
   Mat rotation, translation;
-  fs["rotation"] >> rotation;
-  fs["translation"] >> translation;
-  cout << "rotation" << endl;
-  cout << rotation << endl;
-  cout << "translation" << endl;
-  cout << translation << endl;
+  if(xml){
+    // read camera parameters and distortion coefficient from a file
+    FileStorage fs_left("intrinsic_left.xml", FileStorage::READ);
+    fs_left["intrinsic"] >> intrinsic_left;
+    fs_left["distCoeffs"] >> dist_coeffs_left;
+
+    cout << "intrinsic_left" << endl;
+    cout << intrinsic_left << endl;
+    cout << "distortion coefficient left" << endl;
+    cout << dist_coeffs_left << endl;
+
+    FileStorage fs_right("intrinsic_right.xml", FileStorage::READ);
+    fs_right["intrinsic"] >> intrinsic_right;
+    fs_right["distCoeffs"] >> dist_coeffs_right;
+
+    cout << "intrinsic_right" << endl;
+    cout << intrinsic_right << endl;
+    cout << "distortion coefficient right" << endl;
+    cout << dist_coeffs_right << endl;
+
+    // read fundamental matrix from a file
+    FileStorage fs("fundamental.xml", FileStorage::READ);
+    fs["rotation"] >> rotation;
+    fs["translation"] >> translation;
+    cout << "rotation" << endl;
+    cout << rotation << endl;
+    cout << "translation" << endl;
+    cout << translation << endl;
+  }
+  // read yaml file
+  else{
+    FileStorage fs_left("calib_left.yaml", FileStorage::READ);
+    fs_left["K"] >> intrinsic_left;
+    fs_left["D"] >> dist_coeffs_left;
+
+    cout << "intrinsic_left" << endl;
+    cout << intrinsic_left << endl;
+    cout << "distortion coefficient left" << endl;
+    cout << dist_coeffs_left << endl;
+
+    FileStorage fs_right("calib_right.yaml", FileStorage::READ);
+    fs_right["K"] >> intrinsic_right;
+    fs_right["D"] >> dist_coeffs_right;
+
+    cout << "intrinsic_right" << endl;
+    cout << intrinsic_right << endl;
+    cout << "distortion coefficient right" << endl;
+    cout << dist_coeffs_right << endl;
+
+    // read fundamental matrix from a file
+    FileStorage fs("calib_stereo.yaml", FileStorage::READ);
+    fs["R"] >> rotation;
+    fs["t"] >> translation;
+    cout << "rotation" << endl;
+    cout << rotation << endl;
+    cout << "translation" << endl;
+    cout << translation << endl;
+  }
 
   string left_header = "/home/magiccjae/jae_stuff/classes/ee631/hw4/stereoL";
   string ending = ".bmp";
@@ -100,6 +133,16 @@ int main(int, char**)
   vector<Point2f> four_ideal_right;
   undistortPoints(four_left, four_ideal_left, intrinsic_left, dist_coeffs_left, R1, P1);
   undistortPoints(four_right, four_ideal_right, intrinsic_right, dist_coeffs_right, R2, P2);
+
+  // draw four undistorted corner points on images just to check
+  circle(left_image, four_ideal_left.at(0), 3, Scalar(255,0,0), 3, 8, 0);
+  circle(left_image, four_ideal_left.at(1), 3, Scalar(255,0,0), 3, 8, 0);
+  circle(left_image, four_ideal_left.at(2), 3, Scalar(255,0,0), 3, 8, 0);
+  circle(left_image, four_ideal_left.at(3), 3, Scalar(255,0,0), 3, 8, 0);
+  circle(right_image, four_ideal_right.at(0), 3, Scalar(255,0,0), 3, 8, 0);
+  circle(right_image, four_ideal_right.at(1), 3, Scalar(255,0,0), 3, 8, 0);
+  circle(right_image, four_ideal_right.at(2), 3, Scalar(255,0,0), 3, 8, 0);
+  circle(right_image, four_ideal_right.at(3), 3, Scalar(255,0,0), 3, 8, 0);
 
   // compare Y coordinates to see if they are same.
   cout << "===== left =====" << endl;
