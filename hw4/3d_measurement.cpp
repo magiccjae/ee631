@@ -181,7 +181,7 @@ int main(int, char**)
     string text_z = to_string(temp_z);
     string text = "(" + text_x + ", " + text_y + ", " + text_z + ")";
     Point text_point = four_ideal_left.at(i);
-    putText(left_image, text, Point(text_point.x-200, text_point.y), FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1, 8, false);
+    putText(left_image, text, Point(text_point.x-200, text_point.y), FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1.7, 8, false);
 
     float temp_x1 = round(four_3d_right.at(i).x*100)/100.0;
     float temp_y1 = round(four_3d_right.at(i).y*100)/100.0;
@@ -191,7 +191,7 @@ int main(int, char**)
     string text_z1 = to_string(temp_z1);
     string text1 = "(" + text_x1 + ", " + text_y1 + ", " + text_z1 + ")";
     Point text_point1 = four_ideal_right.at(i);
-    putText(right_image, text1, Point(text_point1.x, text_point1.y), FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1, 8, false);
+    putText(right_image, text1, Point(text_point1.x, text_point1.y), FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1.7, 8, false);
   }
 
   imshow("left_image", left_image);
