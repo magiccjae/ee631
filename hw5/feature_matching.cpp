@@ -15,7 +15,7 @@ vector<uchar> status;
 vector<float> err;
 
 void draw_features(Mat &src);
-void calculate_optf(int frame_jump);
+void template_matching(int frame_jump);
 
 int main(int, char**)
 {
@@ -32,13 +32,15 @@ int main(int, char**)
 
   // how many frame is skipped in between frames
   int frame_jump = 1;
-  calculate_optf(frame_jump);
-
-  frame_jump = 2;
-  calculate_optf(frame_jump);
-
-  frame_jump = 3;
-  calculate_optf(frame_jump);
+  // template_matching(frame_jump);
+  int x_window = 20;
+  int y_window = 20;
+  for(int i=0; i<features_next.size(); i++){
+    Rect rec(features_next.at(i).x-x_window, features_next.at(i).y-y_window, x_window*2, y_window*2);
+    Mat roi = first_gray(rec);
+    imshow("roi", roi);
+    waitKey(0);
+  }
 
   while(waitKey(0)!=27);
   return 0;
@@ -46,26 +48,12 @@ int main(int, char**)
 
 void draw_features(Mat &src){
   for(int i=0; i<features_next.size(); i++){
-    circle(src, features_prev.at(i), 0.3, Scalar(0,255,0), 3);
-    arrowedLine(src, features_prev.at(i), features_next.at(i), Scalar(0,0,255), 1);
+    circle(src, features_next.at(i), 0.3, Scalar(0,255,0), 3);
+    // arrowedLine(src, features_prev.at(i), features_next.at(i), Scalar(0,0,255), 1);
   }
   return;
 }
 
-void calculate_optf(int frame_jump){
-  Mat prev, prev_gray, next, next_gray;
-  for(int i=1; i<=num_images-frame_jump; i=i+frame_jump){
-    cout << i << endl;
-    features_prev = features_next;
-    prev = imread(header+to_string(i)+ending);
-    next = imread(header+to_string(i+frame_jump)+ending);
-    cvtColor(prev, prev_gray, CV_RGB2GRAY);
-    cvtColor(next, next_gray, CV_RGB2GRAY);
-    calcOpticalFlowPyrLK(prev_gray, next_gray, features_prev, features_next, status, err, \
-    Size(21,21), 5, TermCriteria(TermCriteria::COUNT+TermCriteria::EPS, 100, 0.001), 0, 1e-4);
-    draw_features(prev);
-    imshow("opf", prev);
-
-    waitKey(0);
-  }
+void template_matching(int frame_jump){
+  return;
 }
