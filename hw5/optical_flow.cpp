@@ -48,7 +48,7 @@ void draw_features(Mat &src){
 
 void calculate_optf(int frame_jump){
   Mat prev, prev_gray, next, next_gray;
-  for(int i=1; i<=num_images-frame_jump; i=i+frame_jump){
+  for(int i=1; i<=num_images-frame_jump; i++){
     cout << i << endl;
     features_prev = features_next;
     prev = imread(header+to_string(i)+ending);
