@@ -51,10 +51,15 @@ void draw_features(Mat &src){
 }
 
 void template_matching(int frame_jump){
-  int x_window = 10;
-  int y_window = 10;
+  // template size
+  int x_template = 5;
+  int y_template = 5;
   Mat prev, prev_gray, next, next_gray;
   Mat result;
+
+  // search window size
+  int x_window = 20;
+  int y_window = 20;
 
   for(int i=1; i<=num_images-frame_jump; i++){
     cout << i << endl;
@@ -67,24 +72,30 @@ void template_matching(int frame_jump){
     for(int i=0; i<features_prev.size(); i++){
       // boundary check for template
       int x_initial = features_prev.at(i).x;
-      if(x_initial-x_window < 0){
-        x_initial = 0;
+      if(x_initial+x_template >= x_size){
+        int x_over = x_initial+x_template-x_size;
+        x_initial = x_initial-x_template-x_over;
       }
-      else if(x_initial+x_window*2 >= x_size){
-        int x_over = x_initial+x_window*2-x_size;
-        x_initial = x_initial-x_window-x_over;
-      }
+
       int y_initial = features_prev.at(i).y;
-      if(y_initial-y_window < 0){
+      if(y_initial-y_template < 0){
         y_initial = 0;
       }
-      else if(y_initial+y_window*2 >= y_size){
-        int y_over = y_initial+y_window*2-y_size;
-        y_initial = y_initial-y_window-y_over;
+      else if(y_initial+y_template >= y_size){
+        int y_over = y_initial+y_template-y_size;
+        y_initial = y_initial-y_template-y_over;
+      }
+      else{
+        y_initial = y_initial-y_template;
       }
       // cout << x_initial << ", " << y_initial << endl;
-      Rect rec(x_initial, y_initial, x_window*2, y_window*2);
+
+      // construct template rectangle
+      Rect rec(x_initial, y_initial, x_template*2, y_template*2);
       Mat roi = prev_gray(rec);
+
+      // construct search window
+      Rect rec()
       matchTemplate(next_gray, roi, result, CV_TM_SQDIFF);
       Point min_loc;
       minMaxLoc(result, 0, 0, &min_loc, 0, Mat());
