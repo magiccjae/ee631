@@ -44,7 +44,7 @@ int main(int, char**)
 
 void draw_features(Mat &src){
   for(int i=0; i<features_next.size(); i++){
-    circle(src, features_next.at(i), 0.3, Scalar(0,255,0), 3);
+    circle(src, features_prev.at(i), 0.3, Scalar(0,255,0), 3);
     arrowedLine(src, features_prev.at(i), features_next.at(i), Scalar(0,0,255), 1);
   }
   return;
@@ -52,14 +52,14 @@ void draw_features(Mat &src){
 
 void template_matching(int frame_jump){
   // template size
-  int x_template = 5;
-  int y_template = 5;
+  int x_template = 10;
+  int y_template = 10;
   Mat prev, prev_gray, next, next_gray;
   Mat result;
 
   // search window size
-  int x_window = 20;
-  int y_window = 20;
+  int x_window = 30;
+  int y_window = 30;
 
   for(int i=1; i<=num_images-frame_jump; i++){
     cout << i << endl;
@@ -72,36 +72,50 @@ void template_matching(int frame_jump){
     for(int i=0; i<features_prev.size(); i++){
       // boundary check for template
       int x_initial = features_prev.at(i).x;
+      int x_last = x_initial + x_template;
       if(x_initial+x_template >= x_size){
-        int x_over = x_initial+x_template-x_size;
-        x_initial = x_initial-x_template-x_over;
+        x_last = x_size;
       }
+      int x_t_width = x_last - x_initial;
 
       int y_initial = features_prev.at(i).y;
-      if(y_initial-y_template < 0){
-        y_initial = 0;
+      int y_last = y_initial + y_template;
+      if(y_initial+y_template >= y_size){
+        y_last = y_size;
       }
-      else if(y_initial+y_template >= y_size){
-        int y_over = y_initial+y_template-y_size;
-        y_initial = y_initial-y_template-y_over;
-      }
-      else{
-        y_initial = y_initial-y_template;
-      }
+      int y_t_width = y_last - y_initial;
       // cout << x_initial << ", " << y_initial << endl;
 
       // construct template rectangle
-      Rect rec(x_initial, y_initial, x_template*2, y_template*2);
-      Mat roi = prev_gray(rec);
+      Rect rec(x_initial, y_initial, x_t_width, y_t_width);
+      Mat my_template = prev_gray(rec);
 
       // construct search window
-      Rect rec()
-      matchTemplate(next_gray, roi, result, CV_TM_SQDIFF);
-      Point min_loc;
-      minMaxLoc(result, 0, 0, &min_loc, 0, Mat());
-      // cout << min_loc << endl;
-      features_next.push_back(min_loc);
-      // arrowedLine(prev, features_prev.at(i), min_loc, Scalar(0,0,255), 1);
+      // x, y top-left and bottom-right
+      int x_tl = x_initial-x_window;
+      if(x_tl <= 0){
+        x_tl = 0;
+      }
+      int y_tl = y_initial-y_window;
+      if(y_tl <= 0){
+        y_tl = 0;
+      }
+      int x_br = x_initial+x_window;
+      if(x_br >= x_size-1){
+        x_br = x_size-1;
+      }
+      int y_br = y_initial+y_window;
+      if(y_br >= y_size-1){
+        y_br = y_size-1;
+      }
+
+      Rect rec1(Point(x_tl,y_tl), Point(x_br,y_br));
+      Mat search_window = next_gray(rec1);
+      matchTemplate(search_window, my_template, result, TM_CCORR_NORMED);
+      Point max_loc;
+      minMaxLoc(result, 0, 0, 0, &max_loc, Mat());
+      Point real_match(max_loc.x+x_tl, max_loc.y+y_tl);
+      features_next.push_back(real_match);
     }
     draw_features(prev);
     imshow("result",prev);
