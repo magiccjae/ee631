@@ -38,6 +38,14 @@ int main(int, char**)
   int frame_jump = 1;
   template_matching(frame_jump);
 
+  goodFeaturesToTrack(first_gray, features_prev, max_corners, qlevel, min_distance);
+  frame_jump = 2;
+  template_matching(frame_jump);
+
+  goodFeaturesToTrack(first_gray, features_prev, max_corners, qlevel, min_distance);
+  frame_jump = 3;
+  template_matching(frame_jump);
+
   while(waitKey(0)!=27);
   return 0;
 }

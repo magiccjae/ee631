@@ -29,14 +29,15 @@ int main(int, char**)
   double min_distance = 10;
   // obtain initial set of features
   goodFeaturesToTrack(first_gray, features_next, max_corners, qlevel, min_distance);
-
   // how many frame is skipped in between frames
   int frame_jump = 1;
   calculate_optf(frame_jump);
 
+  goodFeaturesToTrack(first_gray, features_next, max_corners, qlevel, min_distance);
   frame_jump = 2;
   calculate_optf(frame_jump);
 
+  goodFeaturesToTrack(first_gray, features_next, max_corners, qlevel, min_distance);
   frame_jump = 3;
   calculate_optf(frame_jump);
 
