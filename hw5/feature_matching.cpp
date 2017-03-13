@@ -60,8 +60,8 @@ void draw_features(Mat &src){
 
 void template_matching(int frame_jump){
   // template size
-  int x_template = 10;
-  int y_template = 10;
+  int x_template = 15;
+  int y_template = 15;
   Mat prev, prev_gray, next, next_gray;
   Mat result;
 

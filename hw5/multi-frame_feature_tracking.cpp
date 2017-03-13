@@ -9,9 +9,9 @@ int num_images = 6;
 string header = "/home/magiccjae/jae_stuff/classes/ee631/hw5/images/parallel_cube/ParallelCube";
 string ending = ".jpg";
 
-vector<Point> features_prev, features_next;
+vector<Point> features_prev, features_next, prev_good, next_good;
 
-void draw_features(Mat &src);
+void draw_features(Mat &src, Mat &good_features);
 void template_matching(int frame_jump);
 
 int x_size;
@@ -42,10 +42,10 @@ int main(int, char**)
   return 0;
 }
 
-void draw_features(Mat &src){
+void draw_features(Mat &src, Mat &good_features){
   for(int i=0; i<features_prev.size(); i++){
     circle(src, features_prev.at(i), 0.3, Scalar(0,255,0), 3);
-    // arrowedLine(src, features_prev.at(i), features_next.at(i), Scalar(0,0,255), 1);
+    arrowedLine(src, features_prev.at(i), features_next.at(i), Scalar(0,0,255), 1);
   }
   return;
 }
@@ -119,14 +119,12 @@ void template_matching(int frame_jump){
     }
     Mat good_features;
     findFundamentalMat(features_prev, features_next, CV_FM_RANSAC, 3, 0.99, good_features);
-    cout << good_features << endl;
-    // cout << good_features.channels() << endl;
-    cout << good_features.at<bool>(4,0) << endl;
-    // for(int i=0; i< features_next.size(); i++){
-    //
+    // cout << good_features << endl;
+    // for(int i=0; i<features_next.size(); i++){
+    //   if()
     // }
 
-    draw_features(prev);
+    // draw_features(prev);
     imshow("result",prev);
     waitKey(0);
     features_prev = features_next;
