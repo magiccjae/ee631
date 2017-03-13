@@ -17,10 +17,21 @@ void template_matching(int frame_jump);
 int x_size;
 int y_size;
 
+VideoWriter vout;
+
 int main(int, char**)
 {
+  // video out
+  int codec = CV_FOURCC('M', 'J', 'P', 'G');  // select desired codec (must be available at runtime)
+  double fps = 25.0;                          // framerate of the created video stream
+  string filename = "./feature_matching.avi";             // name of the output video file
+
   int num = 1;
   Mat first = imread(header+to_string(num)+ending);
+
+  bool isColor = (first.type() == CV_8UC3);
+  vout.open(filename, codec, fps, first.size(), isColor);
+
   Mat first_gray;
   cvtColor(first, first_gray, CV_RGB2GRAY);
   Size image_size =  first_gray.size();
@@ -31,18 +42,22 @@ int main(int, char**)
   double qlevel = 0.01;
   double min_distance = 10;
   // obtain initial set of features
-  goodFeaturesToTrack(first_gray, features_prev, max_corners, qlevel, min_distance);
+  int mask_size = 50;
+  Rect rec2(Point(mask_size, mask_size), Point(x_size-mask_size, y_size-mask_size));
+  Mat mask(first_gray.size(), CV_8UC1, Scalar::all(0));
+  mask(rec2).setTo(Scalar::all(255));
+  goodFeaturesToTrack(first_gray, features_prev, max_corners, qlevel, min_distance, mask);
   // draw_features(first);
 
   // how many frame is skipped in between frames
   int frame_jump = 1;
   template_matching(frame_jump);
 
-  goodFeaturesToTrack(first_gray, features_prev, max_corners, qlevel, min_distance);
+  goodFeaturesToTrack(first_gray, features_prev, max_corners, qlevel, min_distance, mask);
   frame_jump = 2;
   template_matching(frame_jump);
 
-  goodFeaturesToTrack(first_gray, features_prev, max_corners, qlevel, min_distance);
+  goodFeaturesToTrack(first_gray, features_prev, max_corners, qlevel, min_distance, mask);
   frame_jump = 3;
   template_matching(frame_jump);
 
@@ -60,14 +75,14 @@ void draw_features(Mat &src){
 
 void template_matching(int frame_jump){
   // template size
-  int x_template = 15;
-  int y_template = 15;
+  int x_template = 30;
+  int y_template = 30;
   Mat prev, prev_gray, next, next_gray;
   Mat result;
 
   // search window size
-  int x_window = 30;
-  int y_window = 30;
+  int x_window = 50;
+  int y_window = 50;
 
   for(int i=1; i<=num_images-frame_jump; i++){
     cout << i << endl;
@@ -120,6 +135,7 @@ void template_matching(int frame_jump){
       Rect rec1(Point(x_tl,y_tl), Point(x_br,y_br));
       Mat search_window = next_gray(rec1);
       matchTemplate(search_window, my_template, result, TM_CCORR_NORMED);
+      normalize( result, result, 0, 1, NORM_MINMAX, -1, Mat() );
       Point max_loc;
       minMaxLoc(result, 0, 0, 0, &max_loc, Mat());
       Point real_match(max_loc.x+x_tl, max_loc.y+y_tl);
@@ -127,6 +143,8 @@ void template_matching(int frame_jump){
     }
     draw_features(prev);
     imshow("result",prev);
+
+    vout.write(prev);
     waitKey(0);
     features_prev = features_next;
     features_next.clear();

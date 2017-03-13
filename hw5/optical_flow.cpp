@@ -17,27 +17,48 @@ vector<float> err;
 void draw_features(Mat &src);
 void calculate_optf(int frame_jump);
 
+int x_size;
+int y_size;
+
+VideoWriter vout;
+
 int main(int, char**)
 {
+  // video out
+  int codec = CV_FOURCC('M', 'J', 'P', 'G');  // select desired codec (must be available at runtime)
+  double fps = 25.0;                          // framerate of the created video stream
+  string filename = "./optial_flow.avi";             // name of the output video file
+
   int num = 1;
   Mat first = imread(header+to_string(num)+ending);
+
+  bool isColor = (first.type() == CV_8UC3);
+  vout.open(filename, codec, fps, first.size(), isColor);
+
   Mat first_gray;
   cvtColor(first, first_gray, CV_RGB2GRAY);
+  Size image_size =  first_gray.size();
+  x_size = image_size.width;
+  y_size = image_size.height;
 
   int max_corners = 500;
   double qlevel = 0.01;
   double min_distance = 10;
   // obtain initial set of features
-  goodFeaturesToTrack(first_gray, features_next, max_corners, qlevel, min_distance);
+  int mask_size = 50;
+  Rect rec2(Point(mask_size, mask_size), Point(x_size-mask_size, y_size-mask_size));
+  Mat mask(first_gray.size(), CV_8UC1, Scalar::all(0));
+  mask(rec2).setTo(Scalar::all(255));
+  goodFeaturesToTrack(first_gray, features_next, max_corners, qlevel, min_distance, mask);
   // how many frame is skipped in between frames
   int frame_jump = 1;
   calculate_optf(frame_jump);
 
-  goodFeaturesToTrack(first_gray, features_next, max_corners, qlevel, min_distance);
+  goodFeaturesToTrack(first_gray, features_next, max_corners, qlevel, min_distance, mask);
   frame_jump = 2;
   calculate_optf(frame_jump);
 
-  goodFeaturesToTrack(first_gray, features_next, max_corners, qlevel, min_distance);
+  goodFeaturesToTrack(first_gray, features_next, max_corners, qlevel, min_distance, mask);
   frame_jump = 3;
   calculate_optf(frame_jump);
 
@@ -67,6 +88,7 @@ void calculate_optf(int frame_jump){
     draw_features(prev);
     imshow("opf", prev);
 
+    vout.write(prev);
     waitKey(0);
   }
 }
