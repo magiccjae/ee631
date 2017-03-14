@@ -7,9 +7,9 @@ using namespace std;
 
 int num_images = 6;
 // string header = "/home/magiccjae/jae_stuff/classes/ee631/hw5/images/parallel_cube/ParallelCube";
-string header = "/home/magiccjae/jae_stuff/classes/ee631/hw5/images/parallel_real/ParallelReal";
+// string header = "/home/magiccjae/jae_stuff/classes/ee631/hw5/images/parallel_real/ParallelReal";
 // string header = "/home/magiccjae/jae_stuff/classes/ee631/hw5/images/turned_cube/TurnCube";
-// string header = "/home/magiccjae/jae_stuff/classes/ee631/hw5/images/turned_real/TurnReal";
+string header = "/home/magiccjae/jae_stuff/classes/ee631/hw5/images/turned_real/TurnReal";
 string ending = ".jpg";
 
 vector<Point> features_prev, features_next, prev_good, next_good, features_first, features_whatever, first_good;
@@ -68,14 +68,14 @@ int main(int, char**)
 
 void template_matching(int frame_jump){
   // template size
-  int x_template = 15;
-  int y_template = 15;
+  int x_template = 30;
+  int y_template = 30;
   Mat prev, prev_gray, next, next_gray;
   Mat result;
 
   // search window size
-  int x_window = 30;
-  int y_window = 30;
+  int x_window = 50;
+  int y_window = 50;
 
   for(int i=num; i<=num+num_images-frame_jump; i++){
     cout << i << endl;
@@ -128,7 +128,7 @@ void template_matching(int frame_jump){
       Rect rec1(Point(x_tl,y_tl), Point(x_br,y_br));
       Mat search_window = next_gray(rec1);
       matchTemplate(search_window, my_template, result, TM_CCORR_NORMED);
-      normalize( result, result, 0, 1, NORM_MINMAX, -1, Mat() );
+      normalize(result, result, 0, 1, NORM_MINMAX, -1, Mat() );
       Point max_loc;
       minMaxLoc(result, 0, 0, 0, &max_loc, Mat());
       Point real_match(max_loc.x+x_tl, max_loc.y+y_tl);
@@ -153,7 +153,7 @@ void template_matching(int frame_jump){
     first_good.erase(first_good.begin(),first_good.begin()+features_next.size());
 
     cout << "num of good features: " << howmany_good << endl;
-
+    cout << "double checking: " << first_good.size() << endl;
     // for(int j=0; j<features_prev.size(); j++){
     //   circle(prev, features_prev.at(j), 0.3, Scalar(0,255,0), 3);
     // }
