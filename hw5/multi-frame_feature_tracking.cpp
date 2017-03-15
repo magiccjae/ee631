@@ -77,7 +77,7 @@ void template_matching(int frame_jump){
   int x_window = 30;
   int y_window = 30;
 
-  for(int i=num; i<=num+num_images-frame_jump; i++){
+  for(int i=num; i<num+num_images-frame_jump; i++){
     cout << i << endl;
     prev = imread(header+to_string(i)+ending);
     next = imread(header+to_string(i+frame_jump)+ending);
