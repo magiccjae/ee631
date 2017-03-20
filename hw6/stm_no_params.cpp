@@ -59,6 +59,7 @@ int main(int, char**)
   cout << "======= H2 =======" << endl;
   cout << H2 << endl;
 
+  Mat M = (Mat_<double>(3,3) << 1, 0, 0, 0, 1, 0, 0, 0, 1);
 
   while(waitKey(0)!=27);
   return 0;
