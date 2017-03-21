@@ -6,16 +6,16 @@ using namespace cv;
 using namespace std;
 
 int num_images = 6;
-string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/parallel_cube/ParallelCube";
+// string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/parallel_cube/ParallelCube";
 // string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/parallel_real/ParallelReal";
 // string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/turned_cube/TurnCube";
-// string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/turned_real/TurnReal";
+string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/turned_real/TurnReal";
 string ending = ".jpg";
 
 vector<Point> features_prev, features_next, prev_good, next_good, features_first, features_whatever, first_good;
 
-void draw_features(Mat &src);
 void template_matching(int frame_jump);
+void draw_line(Mat &src);
 
 int x_size;
 int y_size;
@@ -26,12 +26,13 @@ int main(int, char**)
 {
   Mat first = imread(header+to_string(num)+ending);
   Mat first_gray;
+  int image_type = first.type();
   cvtColor(first, first_gray, CV_RGB2GRAY);
   Size image_size =  first_gray.size();
   x_size = image_size.width;
   y_size = image_size.height;
 
-  int max_corners = 300;
+  int max_corners = 500;
   double qlevel = 0.01;
   double min_distance = 10;
   // obtain initial set of features
@@ -59,10 +60,32 @@ int main(int, char**)
   cout << "======= H2 =======" << endl;
   cout << H2 << endl;
 
-  Mat M = (Mat_<double>(3,3) << 1, 0, 0, 0, 1, 0, 0, 0, 1);
+  // Guess the intrinsic parameters and distortion coefficients
+  Mat M = (Mat_<double>(3,3) << 1000, 0, 320, 0, 1000, 240, 0, 0, 1);
+  Mat distCoeffs = (Mat_<double>(1,5) << 0, 0, 0, 0, 0);
+  Mat R1 = M.inv()*H1*M;
+
+  Mat map1, map2;
+  initUndistortRectifyMap(M, distCoeffs, R1, M, image_size, CV_32FC1, map1, map2);
+  remap(first, first, map1, map2, INTER_NEAREST);
+  draw_line(first);
+  imshow("first", first);
+
+  Mat R2 = M.inv()*H2*M;
+  initUndistortRectifyMap(M, distCoeffs, R2, M, image_size, CV_32FC1, map1, map2);
+  remap(last, last, map1, map2, INTER_NEAREST);
+  draw_line(last);
+  imshow("last", last);
 
   while(waitKey(0)!=27);
   return 0;
+}
+
+void draw_line(Mat &src){
+  int line_step = 50;
+  for(int i=0; i<y_size; i++){
+    line(src, Point(0,i*line_step), Point(x_size,i*line_step), Scalar(0,255,0), 1);
+  }
 }
 
 void template_matching(int frame_jump){
