@@ -6,10 +6,10 @@ using namespace cv;
 using namespace std;
 
 int num_images = 6;
-// string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/parallel_cube/ParallelCube";
+string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/parallel_cube/ParallelCube";
 // string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/parallel_real/ParallelReal";
 // string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/turned_cube/TurnCube";
-string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/turned_real/TurnReal";
+// string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/turned_real/TurnReal";
 string ending = ".jpg";
 
 vector<Point2f> features_prev, features_next, prev_good, next_good, features_first, features_whatever, first_good;
@@ -63,86 +63,13 @@ int main(int, char**)
   }
   cout << "after refine: " << first_refined.size() << endl;
 
+  cout << first_refined << endl;
+
   // calibrated intrinsic parameters and distortion coefficients
   Mat M = (Mat_<double>(3,3) << 825.0900600547, 0.0000000000, 331.6538103208, 0.0000000000, 824.2672147458, 252.9284287373, 0.0000000000, 0.0000000000, 1.0000000000);
   Mat distCoeffs = (Mat_<double>(1,5) << -0.2380769337, 0.0931325835, 0.0003242537, -0.0021901930, 0.4641735616);
 
-  // fundamental matrix with undistorted points
-  vector<Point2f> first_undistorted, last_undistorted;
-  undistortPoints(first_refined, first_undistorted, M, distCoeffs, noArray(), M);
-  undistortPoints(last_refined, last_undistorted, M, distCoeffs, noArray(), M);
-  Mat F = findFundamentalMat(first_undistorted, last_undistorted, CV_FM_8POINT);
-  // cout << "======= Fundamental Matrix =======" << endl;
-  // cout << F << endl;
 
-  // essential matrix
-  Mat E = M.t()*F*M;
-
-  // method 1 means matrix calculation. 2 means to use 'recoverPose' function
-  int method = 2;
-  if(method==1){
-    // see slide 22, page 7
-    Mat u, vt, w;
-    SVD::compute(E, w, u, vt);
-    // cout << "======= w =======" << endl;
-    // cout << w << endl;
-    normalize(w,w);
-    // cout << "======= w normalized =======" << endl;
-    // cout << w << endl;
-    // cout << "======= u =======" << endl;
-    // cout << u << endl;
-    // cout << "======= vt =======" << endl;
-    // cout << vt << endl << endl;
-
-    // calculate R, T_hat(estimated translation)
-    Mat R_tz1 = (Mat_<double>(3,3) << 0, 1, 0, -1, 0, 0, 0, 0, 1);
-    Mat R_tz2 = (Mat_<double>(3,3) << 0, -1, 0, 1, 0, 0, 0, 0, 1);
-    Mat R1 = u*R_tz1*vt;
-    Mat R2 = u*R_tz2*vt;
-    Mat diagonal = (Mat_<double>(3,3) << 1, 0, 0, 0, 1, 0, 0, 0, 0);
-    Mat T_hat1 = u*R_tz1*diagonal*u.t();
-    Mat T_hat2 = u*R_tz2*diagonal*u.t();
-
-    // print out the resulting 4 pairs
-    cout << "!!!!!!!!!!!!!!! set 1 !!!!!!!!!!!!!!!" << endl;
-    cout << "======= R1 =======" << endl;
-    cout << R1 << endl;
-    cout << "======= T1 =======" << endl;
-    cout << T_hat1 << endl << endl;
-    cout << "!!!!!!!!!!!!!!! set 2 !!!!!!!!!!!!!!!" << endl;
-    cout << "======= R1 =======" << endl;
-    cout << R1 << endl;
-    cout << "======= T2 =======" << endl;
-    cout << T_hat2 << endl << endl;
-    cout << "!!!!!!!!!!!!!!! set 3 !!!!!!!!!!!!!!!" << endl;
-    cout << "======= R2 =======" << endl;
-    cout << R2 << endl;
-    cout << "======= T1 =======" << endl;
-    cout << T_hat1 << endl << endl;
-    cout << "!!!!!!!!!!!!!!! set 4 !!!!!!!!!!!!!!!" << endl;
-    cout << "======= R2 =======" << endl;
-    cout << R2 << endl;
-    cout << "======= T2 =======" << endl;
-    cout << T_hat2 << endl << endl;
-    // T = [0  -Tz  Ty
-    //      Tz  0  -Tx
-    //      Ty  Tx  0]
-  }
-  else if(method==2){
-    Mat R,t;
-    recoverPose(E, first_undistorted, last_undistorted, R, t, M.at<double>(0,0), Point2d(M.at<double>(0,2), M.at<double>(1,2)));
-    cout << "======= R =======" << endl;
-    cout << R << endl;
-    cout << "======= t =======" << endl;
-    cout << t << endl;
-    cout << "======= E =======" << endl;
-    cout << E << endl;
-    cout << "======= F =======" << endl;
-    cout << F << endl;
-  }
-  else{
-    cout << "iintentionally doing nothing" << endl;
-  }
 
   for(int i=0; i<first_refined.size(); i++){
       circle(first, first_refined.at(i), 2, Scalar(0,255,0));

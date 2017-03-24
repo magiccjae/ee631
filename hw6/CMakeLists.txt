@@ -5,6 +5,8 @@ find_package( OpenCV REQUIRED )
 
 add_executable(stm_no_params stm_no_params.cpp )
 add_executable(stm_intrinsic stm_intrinsic.cpp )
+add_executable(stm stm.cpp )
 
 target_link_libraries(stm_no_params ${OpenCV_LIBS} )
 target_link_libraries(stm_intrinsic ${OpenCV_LIBS} )
+target_link_libraries(stm ${OpenCV_LIBS} )
