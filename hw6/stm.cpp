@@ -62,18 +62,72 @@ int main(int, char**)
     }
   }
   cout << "after refine: " << first_refined.size() << endl;
-
-  cout << first_refined << endl;
+  // cout << first_refined << endl;
 
   // calibrated intrinsic parameters and distortion coefficients
   Mat M = (Mat_<double>(3,3) << 825.0900600547, 0.0000000000, 331.6538103208, 0.0000000000, 824.2672147458, 252.9284287373, 0.0000000000, 0.0000000000, 1.0000000000);
   Mat distCoeffs = (Mat_<double>(1,5) << -0.2380769337, 0.0931325835, 0.0003242537, -0.0021901930, 0.4641735616);
 
+  // fundamental matrix with undistorted points
+  vector<Point2f> first_undistorted, last_undistorted;
+  undistortPoints(first_refined, first_undistorted, M, distCoeffs, noArray(), M);
+  undistortPoints(last_refined, last_undistorted, M, distCoeffs, noArray(), M);
+  // At this point first_undistorted, last_undistorted are already aligned on y which means 'rectified'.
+  // fundamental matrix
+  Mat F = findFundamentalMat(first_undistorted, last_undistorted, CV_FM_8POINT);
+  // essential matrix from fundamental matrix and intrinsic parameters
+  Mat E = M.t()*F*M;
 
+  // rotation and translation up to a scale factor.
+  Mat R,t;
+  recoverPose(E, first_undistorted, last_undistorted, R, t, M.at<double>(0,0), Point2d(M.at<double>(0,2), M.at<double>(1,2)));
+  
+  // R1, R2, P1, P2, Q are output matrices from stereoRectify
+  Mat R1, R2, P1, P2, Q;
+  stereoRectify(M, distCoeffs, M, distCoeffs, \
+  image_size, R, t, R1, R2, P1, P2, Q, 0, -1, image_size, 0, 0);
 
-  for(int i=0; i<first_refined.size(); i++){
-      circle(first, first_refined.at(i), 2, Scalar(0,255,0));
-      circle(last, last_refined.at(i), 2, Scalar(0,255,0));
+  // points on the last image act as points from left camera and points on the first image act as points from right camera
+  vector<Point3f> left_input;
+  vector<Point3f> right_input;
+  // augment disparity to make suitable inputs for perspectiveTransform function
+  for(int i=0; i<first_undistorted.size(); i++){
+    float disparity = last_undistorted.at(i).x - first_undistorted.at(i).x;
+    Point3f a_point(last_undistorted.at(i).x, last_undistorted.at(i).y, disparity);
+    Point3f another_point(first_undistorted.at(i).x, first_undistorted.at(i).y, disparity);
+    left_input.push_back(a_point);
+    right_input.push_back(another_point);
+  }
+
+  // selecting features that are on the closest point on the cube
+  vector<Point3f> right_closest;
+  for(int i=0; i<right_input.size(); i++){
+    if(right_input.at(i).x>280 && right_input.at(i).x<310 && right_input.at(i).y>75 && right_input.at(i).y<450){
+      right_closest.push_back(right_input.at(i));
+    }
+  }
+  cout << right_closest << endl;
+
+  // left_3d contains the 3d coordinates for the last image.
+  // right_3d contains the 3d coordinates for the first image.
+  // vector<Point3f> left_3d;
+  vector<Point3f> right_3d;
+  // perspectiveTransform(left_input, left_3d, Q);
+  perspectiveTransform(right_closest, right_3d, Q);
+  // cout << "===== left 3D=====" << endl;
+  // cout << left_3d << endl;
+  cout << "===== right 3D=====" << endl;
+  cout << right_3d << endl;
+
+  for(int i=0; i<right_closest.size(); i++){
+      circle(first, Point(right_closest.at(i).x, right_closest.at(i).y), 1, Scalar(0,255,0), 2);
+      string text_x = to_string(right_3d.at(i).x);
+      string text_y = to_string(right_3d.at(i).y);
+      string text_z = to_string(right_3d.at(i).z);
+      string text = "(" + text_x + ", " + text_y + ", " + text_z + ")";
+      Point text_point(right_closest.at(i).x, right_closest.at(i).y);
+      putText(first, text, Point(text_point.x, text_point.y), \
+              FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1.7, 8, false);
   }
 
   imshow("first", first);

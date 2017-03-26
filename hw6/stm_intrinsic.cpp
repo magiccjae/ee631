@@ -141,7 +141,7 @@ int main(int, char**)
     cout << F << endl;
   }
   else{
-    cout << "iintentionally doing nothing" << endl;
+    cout << "intentionally doing nothing" << endl;
   }
 
   for(int i=0; i<first_refined.size(); i++){
