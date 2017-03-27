@@ -1,15 +1,16 @@
 #include "opencv2/opencv.hpp"
 #include <string>
 #include <iostream>
+#include <time.h>       /* time */
 
 using namespace cv;
 using namespace std;
 
 int num_images = 6;
-string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/parallel_cube/ParallelCube";
+// string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/parallel_cube/ParallelCube";
 // string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/parallel_real/ParallelReal";
 // string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/turned_cube/TurnCube";
-// string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/turned_real/TurnReal";
+string header = "/home/magiccjae/jae_stuff/classes/ee631/hw6/images/turned_real/TurnReal";
 string ending = ".jpg";
 
 vector<Point2f> features_prev, features_next, prev_good, next_good, features_first, features_whatever, first_good;
@@ -24,6 +25,9 @@ int last_num = 15;
 
 int main(int, char**)
 {
+  /* initialize random seed: */
+  srand (time(NULL));
+
   Mat first = imread(header+to_string(num)+ending);
   Mat first_gray;
   cvtColor(first, first_gray, CV_RGB2GRAY);
@@ -81,57 +85,117 @@ int main(int, char**)
   // rotation and translation up to a scale factor.
   Mat R,t;
   recoverPose(E, first_undistorted, last_undistorted, R, t, M.at<double>(0,0), Point2d(M.at<double>(0,2), M.at<double>(1,2)));
-  
+  // cout << "===== t =====" << endl;
+  // cout << t << endl;
+
+  // parallel = 1 for parallel image set
+  // parallel =2 for turned image set
+  int parallel = 2;
+  double scale_factor = 0;
+  if(parallel==1){
+    scale_factor = 2.08;
+  }
+  else{
+    scale_factor = 2.23;
+  }
   // R1, R2, P1, P2, Q are output matrices from stereoRectify
+  // "t" multiplied by scale_factor to make the closest points on the cube are about 20 in Z axis.
+  Mat t_scaled = t*scale_factor;
+  cout << "===== t_scaled =====" << endl;
+  cout << t_scaled << endl;
+
   Mat R1, R2, P1, P2, Q;
   stereoRectify(M, distCoeffs, M, distCoeffs, \
-  image_size, R, t, R1, R2, P1, P2, Q, 0, -1, image_size, 0, 0);
+  image_size, R, t_scaled, R1, R2, P1, P2, Q, 0, -1, image_size, 0, 0);
 
-  // points on the last image act as points from left camera and points on the first image act as points from right camera
-  vector<Point3f> left_input;
-  vector<Point3f> right_input;
+  vector<Point3f> first_input;
+  vector<Point3f> last_input;
   // augment disparity to make suitable inputs for perspectiveTransform function
   for(int i=0; i<first_undistorted.size(); i++){
-    float disparity = last_undistorted.at(i).x - first_undistorted.at(i).x;
-    Point3f a_point(last_undistorted.at(i).x, last_undistorted.at(i).y, disparity);
-    Point3f another_point(first_undistorted.at(i).x, first_undistorted.at(i).y, disparity);
-    left_input.push_back(a_point);
-    right_input.push_back(another_point);
+    float disparity = first_undistorted.at(i).x - last_undistorted.at(i).x;
+    Point3f a_point(first_undistorted.at(i).x, first_undistorted.at(i).y, disparity);
+    Point3f another_point(last_undistorted.at(i).x, last_undistorted.at(i).y, disparity);
+    first_input.push_back(a_point);
+    last_input.push_back(another_point);
   }
 
-  // selecting features that are on the closest point on the cube
-  vector<Point3f> right_closest;
-  for(int i=0; i<right_input.size(); i++){
-    if(right_input.at(i).x>280 && right_input.at(i).x<310 && right_input.at(i).y>75 && right_input.at(i).y<450){
-      right_closest.push_back(right_input.at(i));
+  // find_scale = 1 to pick the closest points from the cube to find scale factor.
+  // find_scale = 0 to pick random 4 points and display their 3D coordinates
+  int find_scale = 0;
+  // turned = 1 to grab closest points from the TurnedCube image set.
+  if(find_scale==1){
+    // selecting features that are on the closest point on the cube
+    vector<Point3f> first_closest;
+    int x_min = 280;
+    int x_max = 310;
+    int y_min = 75;
+    int y_max = 450;
+    if(parallel==2){
+      x_min = 220;
+      x_max = 250;
+      y_min = 75;
+      y_max = 450;
+    }
+    for(int i=0; i<first_input.size(); i++){
+      if(first_input.at(i).x>x_min && first_input.at(i).x<x_max && first_input.at(i).y>y_min && first_input.at(i).y<y_max){
+        first_closest.push_back(first_input.at(i));
+      }
+    }
+    vector<Point3f> first_3d;
+    perspectiveTransform(first_closest, first_3d, Q);
+    cout << "===== first 3D =====" << endl;
+    cout << first_3d << endl;
+
+    for(int i=0; i<first_closest.size(); i++){
+        circle(first, Point(first_closest.at(i).x, first_closest.at(i).y), 1, Scalar(0,255,0), 2);
+        string text_x = to_string(first_3d.at(i).x);
+        string text_y = to_string(first_3d.at(i).y);
+        string text_z = to_string(first_3d.at(i).z);
+        string text = "(" + text_x + ", " + text_y + ", " + text_z + ")";
+        Point text_point(first_closest.at(i).x, first_closest.at(i).y);
+        putText(first, text, Point(text_point.x, text_point.y), \
+                FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1.7, 8, false);
     }
   }
-  cout << right_closest << endl;
-
-  // left_3d contains the 3d coordinates for the last image.
-  // right_3d contains the 3d coordinates for the first image.
-  // vector<Point3f> left_3d;
-  vector<Point3f> right_3d;
-  // perspectiveTransform(left_input, left_3d, Q);
-  perspectiveTransform(right_closest, right_3d, Q);
-  // cout << "===== left 3D=====" << endl;
-  // cout << left_3d << endl;
-  cout << "===== right 3D=====" << endl;
-  cout << right_3d << endl;
-
-  for(int i=0; i<right_closest.size(); i++){
-      circle(first, Point(right_closest.at(i).x, right_closest.at(i).y), 1, Scalar(0,255,0), 2);
-      string text_x = to_string(right_3d.at(i).x);
-      string text_y = to_string(right_3d.at(i).y);
-      string text_z = to_string(right_3d.at(i).z);
-      string text = "(" + text_x + ", " + text_y + ", " + text_z + ")";
-      Point text_point(right_closest.at(i).x, right_closest.at(i).y);
-      putText(first, text, Point(text_point.x, text_point.y), \
+  else{
+    vector<Point3f> first_3d, last_3d;
+    perspectiveTransform(first_input, first_3d, Q);
+    perspectiveTransform(last_input, last_3d, Q);
+    for(int i=0; i<4; i++){
+      int rand_num = rand()%first_3d.size();
+      // cout << "rand_num: " << rand_num << endl;
+      Point3f a_point = first_3d.at(rand_num);
+      circle(first, Point(first_input.at(rand_num).x, first_input.at(rand_num).y), 1, Scalar(0,255,0), 2);
+      string text_x = "x: " + to_string(a_point.x);
+      string text_y = "y: " + to_string(a_point.y);
+      string text_z = "z: " + to_string(a_point.z);
+      Point text_point(first_input.at(rand_num).x, first_input.at(rand_num).y);
+      putText(first, text_x, Point(text_point.x, text_point.y), \
               FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1.7, 8, false);
+      putText(first, text_y, Point(text_point.x, text_point.y+10), \
+              FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1.7, 8, false);
+      putText(first, text_z, Point(text_point.x, text_point.y+20), \
+              FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1.7, 8, false);
+
+
+      // Point3f another_point = last_3d.at(rand_num);
+      // circle(last, Point(last_input.at(rand_num).x, last_input.at(rand_num).y), 1, Scalar(0,255,0), 2);
+      // string text_x1 = "x: " + to_string(another_point.x);
+      // string text_y1 = "y: " + to_string(another_point.y);
+      // string text_z1 = "z: " + to_string(another_point.z);
+      // Point text_point1(last_input.at(rand_num).x, last_input.at(rand_num).y);
+      // putText(last, text_x1, Point(text_point1.x, text_point1.y), \
+      //         FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1.7, 8, false);
+      // putText(last, text_y1, Point(text_point1.x, text_point1.y+10), \
+      //         FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1.7, 8, false);
+      // putText(last, text_z1, Point(text_point1.x, text_point1.y+20), \
+      //         FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,0,255), 1.7, 8, false);
+
+    }
   }
 
   imshow("first", first);
-  imshow("last", last);
+  // imshow("last", last);
 
   while(waitKey(0)!=27);
   return 0;
@@ -149,7 +213,7 @@ void template_matching(int frame_jump){
   int y_window = 60;
 
   for(int i=num; i<num+num_images-frame_jump; i++){
-    cout << i << endl;
+    // cout << i << endl;
     prev = imread(header+to_string(i)+ending);
     next = imread(header+to_string(i+frame_jump)+ending);
     cvtColor(prev, prev_gray, CV_RGB2GRAY);
@@ -223,7 +287,7 @@ void template_matching(int frame_jump){
     }
     first_good.erase(first_good.begin(),first_good.begin()+features_next.size());
 
-    cout << "num of good features: " << howmany_good << endl;
+    // cout << "num of good features: " << howmany_good << endl;
 
     features_prev.clear();
     features_prev = next_good;
