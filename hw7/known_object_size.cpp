@@ -18,6 +18,7 @@ vector<float> err;
 
 double principal_x = 331.6538103208;
 double principal_y = 252.9284287373;
+double focal_length = 825;
 
 float find_median(vector<float> &vec_tau);
 void draw_features(Mat &src);
@@ -26,31 +27,24 @@ int main(int, char**)
 {
 
   // to write the estimated frames to impact and frame number to a .txt file
-  ofstream myfile("tau.txt");
+  ofstream myfile("distance.txt");
 
   Mat first = imread(header+to_string(1)+ending);
   Mat first_gray;
   cvtColor(first, first_gray, CV_RGB2GRAY);
 
-  int max_corners = 50;
+  int max_corners = 2;
   double qlevel = 0.01;
   double min_distance = 10;
   // obtain initial set of features
-  int x_min = 200;
-  int x_max = 400;
-  int y_min = 100;
-  int y_max = 380;
+  int x_min = 275;
+  int x_max = 375;
+  int y_min = 165;
+  int y_max = 175;
   // rectangle for masking the region of interest around the can
   Rect rec(Point(x_min, y_min), Point(x_max, y_max));
-  int x_min2 = 280;
-  int x_max2 = 360;
-  int y_min2 = 200;
-  int y_max2 = 280;
-  // rectangle for unmasking the region that is really close to the can assuming they cause bad result due to too low parallax.
-  Rect rec2(Point(x_min2, y_min2), Point(x_max2, y_max2));
   Mat mask(first_gray.size(), CV_8UC1, Scalar::all(0));
   mask(rec).setTo(Scalar::all(255));
-  mask(rec2).setTo(Scalar::all(0));
   goodFeaturesToTrack(first_gray, next_features, max_corners, qlevel, min_distance, mask);
 
   for(int i=1; i<num_img; i++){
@@ -64,20 +58,18 @@ int main(int, char**)
     calcOpticalFlowPyrLK(prev_gray, next_gray, prev_features, next_features, status, err, \
     Size(21,21), 5, TermCriteria(TermCriteria::COUNT+TermCriteria::EPS, 100, 0.001), 0, 1e-4);
 
-    vector<float> vec_tau;
-    // find expansion ratio 'a' - see lecture slide 25 page.3
-    for(int j=0; j<prev_features.size(); j++){
-      if(status.at(j)==1){
-        float ax = (next_features.at(j).x-principal_x) / (prev_features.at(j).x-principal_x);
-        float ay = (next_features.at(j).y-principal_y) / (prev_features.at(j).y-principal_y);
-        float tau_x = ax / (ax-1);
-        float tau_y = ay / (ay-1);
-        vec_tau.push_back(tau_y);
-      }
+    if(prev_features.size()==2){
+      float distance_x = prev_features.at(0).x-prev_features.at(1).x;
     }
-    float final_tau = find_median(vec_tau);
-    cout << final_tau << endl;
-    myfile << i << " " << final_tau << endl;
+
+    for(int j=0; j<prev_features.size(); j++){
+      float distance_x = next_features.at(j).x-prev_features.at(j).x;
+      float tau_x = ax / (ax-1);
+      float tau_y = ay / (ay-1);
+      vec_tau.push_back(tau_y);
+    }
+
+
     draw_features(prev);
     imshow("opf", prev);
     waitKey(0);
@@ -85,11 +77,6 @@ int main(int, char**)
 
   while(waitKey(0)!=27);
   return 0;
-}
-
-float find_median(vector<float> &vec_tau){
-  sort(vec_tau.begin(), vec_tau.end());
-  return vec_tau.at(vec_tau.size()/2);
 }
 
 void draw_features(Mat &src){
