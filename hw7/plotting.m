@@ -37,14 +37,15 @@ ylim([-10 700]);
 [frame, distance] = textread('distance.txt', '%f %f', 18);
 % least square estimation
 p = polyfit(frame,distance,1);
-tau = polyval(p,frame);
+more_frame = 0:50;
+tau = polyval(p,more_frame);
 
 figure(3); hold on; grid on;
 title('Distance(mm)');
 scatter(frame,distance);
-plot(frame,tau);
+plot(more_frame,tau);
 legend('measured', 'estimated');
 xlabel('Frame Number');
 ylabel('Distance(mm)');
-xlim([1 18]);
-ylim([300 700]);
+xlim([0 50]);
+ylim([-10 700]);
