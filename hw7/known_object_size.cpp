@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm> // sort
 #include <fstream>
+#include <stdlib.h>  // abs
 
 using namespace cv;
 using namespace std;
@@ -18,7 +19,8 @@ vector<float> err;
 
 double principal_x = 331.6538103208;
 double principal_y = 252.9284287373;
-double focal_length = 825;
+float focal_length = 825;
+float gascan_width = 59;
 
 float find_median(vector<float> &vec_tau);
 void draw_features(Mat &src);
@@ -59,16 +61,18 @@ int main(int, char**)
     Size(21,21), 5, TermCriteria(TermCriteria::COUNT+TermCriteria::EPS, 100, 0.001), 0, 1e-4);
 
     if(prev_features.size()==2){
-      float distance_x = prev_features.at(0).x-prev_features.at(1).x;
+      float distance_x = fabs(prev_features.at(0).x-prev_features.at(1).x);
+      float distance_z = gascan_width*focal_length/distance_x;
+      cout << distance_z << endl;
+      myfile << i << " " << distance_z << endl;
+      if(i==17){
+        cout << i+1 << endl;
+        distance_x = fabs(next_features.at(0).x-next_features.at(1).x);
+        distance_z = gascan_width*focal_length/distance_x;
+        cout << distance_z << endl;
+        myfile << i+1 << " " << distance_z << endl;
+      }
     }
-
-    for(int j=0; j<prev_features.size(); j++){
-      float distance_x = next_features.at(j).x-prev_features.at(j).x;
-      float tau_x = ax / (ax-1);
-      float tau_y = ay / (ay-1);
-      vec_tau.push_back(tau_y);
-    }
-
 
     draw_features(prev);
     imshow("opf", prev);
