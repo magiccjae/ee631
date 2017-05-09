@@ -38,9 +38,9 @@ int main(int, char**)
   Mat first_gray;
   cvtColor(first, first_gray, CV_RGB2GRAY);
 
-  int max_corners = 500;
+  int max_corners = 1000;
   double qlevel = 0.01;
-  double min_distance = 10;
+  double min_distance = 5;
   // obtain initial set of features
 //   int x_min = 100;
 //   int x_max = 1100;

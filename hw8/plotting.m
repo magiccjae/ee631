@@ -10,7 +10,7 @@ title('visual odometry');
 xlim([-300 300]);
 plot(Tx,Tz);
 
-vo = load('/home/magiccjae/jae_stuff/classes/ee631/hw8/VO_task1.txt');
+vo = load('/home/magiccjae/jae_stuff/classes/ee631/hw8/build/VO_result.txt');
 Tx_vo = vo(:,4);
 Tz_vo = vo(:,12);
 plot(Tx_vo, Tz_vo);
